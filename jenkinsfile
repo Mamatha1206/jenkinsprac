@@ -1,15 +1,9 @@
 pipeline {
     agent any
-
-    environment {
-        DOCKER_USERNAME = credentials('docker-username')  // Use Jenkins Credentials ID
-        DOCKER_PASSWORD = credentials('docker-password')
-    }
-
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/Mamatha1206/jenkinsprac', branch:'main'
+                git url: 'https://github.com/Mamatha1206/jenkinsprac.git', branch: 'main'
             }
         }
 
@@ -21,26 +15,16 @@ pipeline {
                 '''
             }
         }
-
-        stage('Build Maven (optional for Flask)') {
-            when {
-                expression { fileExists('pom.xml') }
-            }
-            steps {
-                sh 'mvn clean package'
-            }
-        }
-
-        stage('Docker Build & Push') {
+        stage('Docker Build & Run') {
             steps {
                 sh '''
                   docker build -t mamatha0124/flaskapp .
-                  echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                  docker push mamatha0124/flaskapp
+                  docker run -d -p 5000:5000 --name flask-container mamatha0124/flaskapp
                 '''
             }
         }
 
+        // You can include the following for Kubernetes only if needed
         stage('Deploy to Kubernetes') {
             steps {
                 sh '''
@@ -50,5 +34,3 @@ pipeline {
             }
         }
     }
-}
-
