@@ -1,0 +1,42 @@
+pipeline {
+  agent any
+
+  stages {
+
+    stage("Checkout") {
+      steps {
+        git url: "https://github.com/Mamatha1206/jenkinsprac", branch: "main"
+      }
+    }
+
+    stage("Install Tools") {
+      steps {
+        sh '''
+          apt update
+          apt install -y python3.12-venv
+          apt install -y openjdk-17-jdk maven
+          apt install -y groovy 
+        '''
+      }
+    }
+
+    stage("Docker Build") {
+      steps {
+        sh 'docker build -t hello-jenkins .'
+      }
+    }
+
+    stage("Run Container") {
+      steps {
+        sh 'docker run hello-jenkins'
+      }
+    }
+
+    stage("Status") {
+      steps {
+        echo "Pipeline completed successfully"
+      }
+    }
+
+  }
+}
