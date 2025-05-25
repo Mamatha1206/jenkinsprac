@@ -1,16 +1,17 @@
-# Use official Python base image
+# Base image
 FROM python:3.10-slim
 
-# Set working directory
+# Set work directory
 WORKDIR /app
 
-# Copy app code
-COPY app.py /app
+# Copy application code
+COPY app.py /app/
+COPY requirements.txt /app/
 
 # Install dependencies
-RUN pip install flask
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose the Flask port
+# Expose port
 EXPOSE 5000
 
 # Run the application
